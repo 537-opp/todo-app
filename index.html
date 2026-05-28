@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>Todo App</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    :root[data-theme="light"] {
+      --bg: #f5f5f5;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --subtext: #888;
+      --border: #e0e0e0;
+      --accent: #5c6bc0;
+      --accent-hover: #3f51b5;
+      --done-text: #aaa;
+      --tab-bg: #e8e8e8;
+      --tab-active: #ffffff;
+      --delete: #ef5350;
+    }
+
+    :root[data-theme="dark"] {
+  --bg: #1a1a1a;
+  --card: #232323;
+  --text: #e0e0e0;
+  --subtext: #666;
+  --border: #333333;
+  --accent: #7986cb;
+  --accent-hover: #5c6bc0;
+  --done-text: #555;
+  --tab-bg: #2a2a2a;
+  --tab-active: #232323;
+  --delete: #ef5350;
+}
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .theme-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 50px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .theme-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 13px 16px;
+      font-size: 15px;
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(92,107,192,0.15);
+    }
+    select {
+  padding: 13px 10px;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  outline: none;
+}
+
+input[type="date"] {
+  padding: 13px 10px;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+}
+
+.task-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.deadline {
+  font-size: 12px;
+  color: var(--subtext);
+}
+
+.deadline.overdue {
+  color: #ef5350;
+  font-weight: 500;
+}
+    .add-btn {
+      padding: 13px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .add-btn:hover {
+      background: var(--accent-hover);
+      transform: scale(1.05);
+    }
+
+    .tabs {
+      display: flex;
+      background: var(--tab-bg);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 16px;
+      gap: 4px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 9px;
+      text-align: center;
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--subtext);
+      border: none;
+      background: transparent;
+    }
+
+    .tab.active {
+      background: var(--tab-active);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .counter {
+      font-size: 12px;
+      background: var(--accent);
+      color: white;
+      border-radius: 50px;
+      padding: 1px 7px;
+      margin-left: 5px;
+    }
+
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    li {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideIn 0.2s ease;
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.35s ease, border-color 0.35s ease;
+  will-change: transform;
+}
+
+li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: var(--accent);
+  cursor: grab;
+}
+li.dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+  transform: scale(1.02);
+}
+
+li.drag-over {
+  border-color: var(--accent);
+  border-style: dashed;
+}
+}
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .checkbox.checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .checkbox.checked::after {
+      content: '✓';
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .task-text {
+      flex: 1;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+
+    .task-text.done {
+      text-decoration: line-through;
+      color: var(--done-text);
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: var(--subtext);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.2s, color 0.2s;
+    }
+
+    li:hover .delete-btn {
+      opacity: 1;
+    }
+
+    .delete-btn:hover {
+      color: var(--delete);
+    }
+    .edit-btn {
+  background: none;
+  border: none;
+  color: var(--subtext);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+li:hover .edit-btn {
+  opacity: 1;
+}
+
+.edit-btn:hover {
+  color: var(--accent);
+}
+
+.edit-input {
+  flex: 1;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 15px;
+  outline: none;
+}
+    .empty {
+      text-align: center;
+      color: var(--subtext);
+      padding: 40px 0;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>📋 Задачи</h1>
+    <button class="theme-btn" onclick="toggleTheme()">
+      <span id="themeIcon">🌙</span>
+      <span id="themeLabel">Тёмная</span>
+    </button>
+  </div>
+
+  <div class="input-area">
+    <input type="text" id="taskInput" placeholder="Новая задача...">
+    <input type="date" id="deadlineInput">
+    <select id="prioritySelect">
+      <option value="none">—</option>
+      <option value="low">🟢</option>
+      <option value="medium">🟡</option>
+      <option value="high">🔴</option>
+    </select>
+    <button class="add-btn" onclick="addTask()">+</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('all')" id="tab-all">Все <span class="counter" id="cnt-all">0</span></button>
+    <button class="tab" onclick="setTab('active')" id="tab-active">Активные <span class="counter" id="cnt-active">0</span></button>
+    <button class="tab" onclick="setTab('done')" id="tab-done">Выполненные <span class="counter" id="cnt-done">0</span></button>
+  </div>
+
+  <ul id="taskList"></ul>
+  <div class="empty" id="emptyMsg">Задач пока нет 👀</div>
+
+</div>
+
+<script>
+  let tasks = [];
+  let currentTab = 'all';
+
+  function addTask() {
+    const input = document.getElementById('taskInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const priority = document.getElementById('prioritySelect').value;
+const deadline = document.getElementById('deadlineInput').value;
+tasks.push({ id: Date.now(), text, done: false, priority, deadline });
+    input.value = '';
+    render();
+  }
+
+  function toggleDone(id) {
+    const task = tasks.find(t => t.id === id);
+    if (task) task.done = !task.done;
+    render();
+  }
+
+  function deleteTask(id) {
+    tasks = tasks.filter(t => t.id !== id);
+    render();
+  }
+  function editTask(id) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+
+  const li = document.querySelector(`[data-id="${id}"]`);
+  const body = li.querySelector('.task-body');
+
+  body.innerHTML = `
+    <input class="edit-input" id="edit-${id}" value="${task.text}">
+  `;
+
+  const input = document.getElementById(`edit-${id}`);
+  input.focus();
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveEdit(id, input.value);
+    if (e.key === 'Escape') render();
+  });
+
+  input.addEventListener('blur', () => saveEdit(id, input.value));
+}
+
+function saveEdit(id, value) {
+  const text = value.trim();
+  if (!text) return;
+  const task = tasks.find(t => t.id === id);
+  if (task) task.text = text;
+  render();
+}
+  function setTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    render();
+  }
+
+  function render() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    const list = document.getElementById('taskList');
+    const empty = document.getElementById('emptyMsg');
+
+    const filtered = tasks.filter(t => {
+      if (currentTab === 'active') return !t.done;
+      if (currentTab === 'done') return t.done;
+      return true;
+    });
+
+    document.getElementById('cnt-all').textContent = tasks.length;
+    document.getElementById('cnt-active').textContent = tasks.filter(t => !t.done).length;
+    document.getElementById('cnt-done').textContent = tasks.filter(t => t.done).length;
+
+    list.innerHTML = '';
+    empty.style.display = filtered.length === 0 ? 'block' : 'none';
+
+    filtered.forEach(task => {
+        const li = document.createElement('li');
+li.setAttribute('data-id', task.id);
+li.setAttribute('draggable', 'true');
+
+li.addEventListener('dragstart', () => {
+  li.classList.add('dragging');
+  setTimeout(() => li.classList.add('dragging'), 0);
+});
+
+li.addEventListener('dragend', () => {
+  li.classList.remove('dragging');
+  document.querySelectorAll('li').forEach(el => el.classList.remove('drag-over'));
+  const newOrder = [...document.getElementById('taskList').querySelectorAll('li')]
+    .map(el => tasks.find(t => t.id == el.getAttribute('data-id')))
+    .filter(Boolean);
+  tasks = newOrder;
+  render();
+});
+
+li.addEventListener('dragover', e => {
+  e.preventDefault();
+  document.querySelectorAll('li').forEach(el => el.classList.remove('drag-over'));
+  li.classList.add('drag-over');
+  const dragging = document.querySelector('.dragging');
+  if (dragging && dragging !== li) {
+    const list = document.getElementById('taskList');
+    const els = [...list.querySelectorAll('li')];
+    const dragIdx = els.indexOf(dragging);
+    const overIdx = els.indexOf(li);
+    if (dragIdx < overIdx) list.insertBefore(dragging, li.nextSibling);
+    else list.insertBefore(dragging, li);
+  }
+});
+      const priorityEmoji = { none: '', low: '🟢', medium: '🟡', high: '🔴' };
+const today = new Date().toISOString().split('T')[0];
+const isOverdue = task.deadline && task.deadline < today && !task.done;
+const deadlineLabel = task.deadline
+  ? `<span class="deadline ${isOverdue ? 'overdue' : ''}">${isOverdue ? '⚠️ ' : '📅 '}${task.deadline}</span>`
+  : '';
+  li.innerHTML = `
+  <div class="checkbox ${task.done ? 'checked' : ''}" onclick="toggleDone(${task.id})"></div>
+  <div class="task-body">
+    <span class="task-text ${task.done ? 'done' : ''}">${task.text}</span>
+    ${deadlineLabel}
+  </div>
+  ${task.priority !== 'none' ? `<span>${priorityEmoji[task.priority]}</span>` : ''}
+  <button class="edit-btn" onclick="editTask(${task.id})">✏️</button>
+  <button class="delete-btn" onclick="deleteTask(${task.id})">✕</button>
+`;
+      list.appendChild(li);
+    });
+  }
+
+  function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  document.getElementById('themeIcon').textContent = isDark ? '🌙' : '☀️';
+  document.getElementById('themeLabel').textContent = isDark ? 'Тёмная' : 'Светлая';
+}
+
+  document.getElementById('taskInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addTask();
+  });
+
+  tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+
+const savedTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+document.getElementById('themeLabel').textContent = savedTheme === 'dark' ? 'Светлая' : 'Тёмная';
+
+render();
+</script>
+</body>
+</html>
