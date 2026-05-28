@@ -23,21 +23,25 @@
       --tab-bg: #e8e8e8;
       --tab-active: #ffffff;
       --delete: #ef5350;
+      --sidebar-bg: #ffffff;
+      --overlay: rgba(0,0,0,0.3);
     }
 
     :root[data-theme="dark"] {
-  --bg: #1a1a1a;
-  --card: #232323;
-  --text: #e0e0e0;
-  --subtext: #666;
-  --border: #333333;
-  --accent: #7986cb;
-  --accent-hover: #5c6bc0;
-  --done-text: #555;
-  --tab-bg: #2a2a2a;
-  --tab-active: #232323;
-  --delete: #ef5350;
-}
+      --bg: #1a1a1a;
+      --card: #232323;
+      --text: #e0e0e0;
+      --subtext: #666;
+      --border: #333333;
+      --accent: #7986cb;
+      --accent-hover: #5c6bc0;
+      --done-text: #555;
+      --tab-bg: #2a2a2a;
+      --tab-active: #232323;
+      --delete: #ef5350;
+      --sidebar-bg: #1e1e1e;
+      --overlay: rgba(0,0,0,0.6);
+    }
 
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -61,10 +65,149 @@
       margin-bottom: 28px;
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     h1 {
       font-size: 28px;
       font-weight: 700;
       letter-spacing: -0.5px;
+    }
+
+    /* Кнопка шестерёнки */
+    .gear-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.4s ease, border-color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .gear-btn:hover {
+      border-color: var(--accent);
+      transform: rotate(60deg);
+    }
+
+    .gear-btn.open {
+      transform: rotate(90deg);
+      border-color: var(--accent);
+    }
+
+    /* Оверлей */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay);
+      z-index: 99;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Боковая панель */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 300px;
+      height: 100vh;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      z-index: 100;
+      transform: translateX(-100%);
+      transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 20px;
+      gap: 24px;
+      overflow-y: auto;
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .sidebar-close {
+      background: none;
+      border: none;
+      color: var(--subtext);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+      line-height: 1;
+    }
+
+    .sidebar-close:hover {
+      color: var(--text);
+    }
+
+    .sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--subtext);
+    }
+
+    .sidebar-section input[type="password"] {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 13px;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .sidebar-section input[type="password"]:focus {
+      border-color: var(--accent);
+    }
+
+    .sidebar-hint {
+      font-size: 12px;
+      color: var(--subtext);
+      line-height: 1.5;
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: var(--border);
     }
 
     .theme-btn {
@@ -105,44 +248,65 @@
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(92,107,192,0.15);
     }
+
     select {
-  padding: 13px 10px;
+      padding: 13px 10px;
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    input[type="date"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.calendar-btn {
+  padding: 13px 14px;
   background: var(--card);
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
-  outline: none;
+  transition: border-color 0.2s;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
-input[type="date"] {
-  padding: 13px 10px;
-  background: var(--card);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  font-size: 14px;
-  cursor: pointer;
-  outline: none;
+.calendar-btn:hover {
+  border-color: var(--accent);
 }
 
-.task-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+.calendar-btn.has-date {
+  border-color: var(--accent);
+  background: rgba(92,107,192,0.08);
 }
 
-.deadline {
-  font-size: 12px;
-  color: var(--subtext);
-}
+    .task-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
 
-.deadline.overdue {
-  color: #ef5350;
-  font-weight: 500;
-}
+    .deadline {
+      font-size: 12px;
+      color: var(--subtext);
+    }
+
+    .deadline.overdue {
+      color: #ef5350;
+      font-weight: 500;
+    }
+
     .add-btn {
       padding: 13px 20px;
       background: var(--accent);
@@ -204,35 +368,34 @@ input[type="date"] {
     }
 
     li {
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 14px 16px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  animation: slideIn 0.2s ease;
-  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.35s ease, border-color 0.35s ease;
-  will-change: transform;
-}
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.2s ease;
+      transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.35s ease, border-color 0.35s ease;
+      will-change: transform;
+    }
 
-li:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-color: var(--accent);
-  cursor: grab;
-}
-li.dragging {
-  opacity: 0.4;
-  cursor: grabbing;
-  transform: scale(1.02);
-}
+    li:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      border-color: var(--accent);
+      cursor: grab;
+    }
 
-li.drag-over {
-  border-color: var(--accent);
-  border-style: dashed;
-}
-}
+    li.dragging {
+      opacity: 0.4;
+      cursor: grabbing;
+      transform: scale(1.02);
+    }
+
+    li.drag-over {
+      border-color: var(--accent);
+      border-style: dashed;
     }
 
     @keyframes slideIn {
@@ -266,7 +429,6 @@ li.drag-over {
     }
 
     .task-text {
-      flex: 1;
       font-size: 15px;
       transition: all 0.2s;
     }
@@ -276,77 +438,140 @@ li.drag-over {
       color: var(--done-text);
     }
 
-    .delete-btn {
+    .delete-btn, .edit-btn, .ai-btn {
       background: none;
       border: none;
       color: var(--subtext);
-      font-size: 18px;
+      font-size: 16px;
       cursor: pointer;
       padding: 4px 6px;
       border-radius: 6px;
       opacity: 0;
       transition: opacity 0.2s, color 0.2s;
+      flex-shrink: 0;
     }
 
-    li:hover .delete-btn {
+    li:hover .delete-btn,
+    li:hover .edit-btn,
+    li:hover .ai-btn {
       opacity: 1;
     }
 
-    .delete-btn:hover {
-      color: var(--delete);
+    .delete-btn { font-size: 18px; }
+    .delete-btn:hover { color: var(--delete); }
+    .edit-btn:hover { color: var(--accent); }
+    .ai-btn:hover { color: #f9a825; }
+
+    .edit-input {
+      flex: 1;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 15px;
+      outline: none;
     }
-    .edit-btn {
-  background: none;
-  border: none;
-  color: var(--subtext);
-  font-size: 16px;
-  cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 6px;
-  opacity: 0;
-  transition: opacity 0.2s, color 0.2s;
-}
 
-li:hover .edit-btn {
-  opacity: 1;
-}
-
-.edit-btn:hover {
-  color: var(--accent);
-}
-
-.edit-input {
-  flex: 1;
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--accent);
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 15px;
-  outline: none;
-}
     .empty {
       text-align: center;
       color: var(--subtext);
       padding: 40px 0;
       font-size: 15px;
     }
+
+    .subtasks {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .subtask {
+      background: var(--tab-bg);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: slideIn 0.2s ease;
+    }
+
+    .subtask-add-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .subtask-add-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .ai-loading {
+      font-size: 13px;
+      color: var(--subtext);
+      padding: 8px 0;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
   </style>
 </head>
 <body>
-<div class="container">
 
-  <div class="header">
-    <h1>📋 Задачи</h1>
+<!-- Оверлей -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- Боковая панель -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-title">⚙️ Настройки</span>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">✨ AI — Anthropic API</div>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+    <div class="sidebar-hint">Вставь свой API ключ чтобы использовать кнопку ✨ на задачах. Ключ хранится только в браузере.</div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">🎨 Тема</div>
     <button class="theme-btn" onclick="toggleTheme()">
       <span id="themeIcon">🌙</span>
       <span id="themeLabel">Тёмная</span>
     </button>
   </div>
 
+</div>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-left">
+      <button class="gear-btn" id="gearBtn" onclick="toggleSidebar()">⚙️</button>
+      <h1>📋 Задачи</h1>
+    </div>
+  </div>
+
   <div class="input-area">
     <input type="text" id="taskInput" placeholder="Новая задача...">
-    <input type="date" id="deadlineInput">
+    <button class="calendar-btn" onclick="document.getElementById('deadlineInput').showPicker()">📅</button>
+<input type="date" id="deadlineInput" style="display:none">
     <select id="prioritySelect">
       <option value="none">—</option>
       <option value="low">🟢</option>
@@ -371,14 +596,29 @@ li:hover .edit-btn {
   let tasks = [];
   let currentTab = 'all';
 
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const gear = document.getElementById('gearBtn');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+    gear.classList.toggle('open');
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('visible');
+    document.getElementById('gearBtn').classList.remove('open');
+  }
+
   function addTask() {
     const input = document.getElementById('taskInput');
     const text = input.value.trim();
     if (!text) return;
 
     const priority = document.getElementById('prioritySelect').value;
-const deadline = document.getElementById('deadlineInput').value;
-tasks.push({ id: Date.now(), text, done: false, priority, deadline });
+    const deadline = document.getElementById('deadlineInput').value;
+    tasks.push({ id: Date.now(), text, done: false, priority, deadline });
     input.value = '';
     render();
   }
@@ -393,39 +633,115 @@ tasks.push({ id: Date.now(), text, done: false, priority, deadline });
     tasks = tasks.filter(t => t.id !== id);
     render();
   }
+
   function editTask(id) {
-  const task = tasks.find(t => t.id === id);
-  if (!task) return;
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
 
-  const li = document.querySelector(`[data-id="${id}"]`);
-  const body = li.querySelector('.task-body');
+    const li = document.querySelector(`[data-id="${id}"]`);
+    const body = li.querySelector('.task-body');
 
-  body.innerHTML = `
-    <input class="edit-input" id="edit-${id}" value="${task.text}">
-  `;
+    body.innerHTML = `<input class="edit-input" id="edit-${id}" value="${task.text}">`;
 
-  const input = document.getElementById(`edit-${id}`);
-  input.focus();
+    const input = document.getElementById(`edit-${id}`);
+    input.focus();
 
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') saveEdit(id, input.value);
-    if (e.key === 'Escape') render();
-  });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') saveEdit(id, input.value);
+      if (e.key === 'Escape') render();
+    });
 
-  input.addEventListener('blur', () => saveEdit(id, input.value));
-}
+    input.addEventListener('blur', () => saveEdit(id, input.value));
+  }
 
-function saveEdit(id, value) {
-  const text = value.trim();
-  if (!text) return;
-  const task = tasks.find(t => t.id === id);
-  if (task) task.text = text;
-  render();
-}
+  function saveEdit(id, value) {
+    const text = value.trim();
+    if (!text) return;
+    const task = tasks.find(t => t.id === id);
+    if (task) task.text = text;
+    render();
+  }
+
   function setTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
+    render();
+  }
+
+  async function aiExpand(id) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+
+    const apiKey = document.getElementById('apiKeyInput').value.trim();
+    if (!apiKey) {
+      toggleSidebar();
+      return;
+    }
+
+    const li = document.querySelector(`[data-id="${id}"]`);
+    const body = li.querySelector('.task-body');
+
+    let subtasksDiv = body.querySelector('.subtasks');
+    if (!subtasksDiv) {
+      subtasksDiv = document.createElement('div');
+      subtasksDiv.className = 'subtasks';
+      body.appendChild(subtasksDiv);
+    }
+    subtasksDiv.innerHTML = `<div class="ai-loading">✨ AI думает...</div>`;
+
+    try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${apiKey}`
+  },
+  body: JSON.stringify({
+    model: 'gpt-4o-mini',
+    max_tokens: 500,
+    messages: [{
+      role: 'user',
+      content: `Разбей задачу на 3-5 конкретных подзадач. Отвечай ТОЛЬКО JSON массивом строк, без пояснений, без markdown. Пример: ["Подзадача 1","Подзадача 2"]. Задача: "${task.text}"`
+    }]
+  })
+});
+
+const data = await response.json();
+console.log('OpenAI response:', JSON.stringify(data));
+if (!data.choices || !data.choices[0]) {
+  throw new Error(data.error?.message || 'Нет ответа от OpenAI');
+}
+const text = data.choices[0].message.content.trim().replace(/```json|```/g, '').trim();
+      const subtasks = JSON.parse(text);
+
+      subtasksDiv.innerHTML = '';
+      subtasks.forEach(s => {
+        const div = document.createElement('div');
+        div.className = 'subtask';
+        div.innerHTML = `
+          <span style="flex:1">${s}</span>
+          <button class="subtask-add-btn" onclick="addSubtask('${s.replace(/'/g, "\\'")}', ${id})">+ добавить</button>
+        `;
+        subtasksDiv.appendChild(div);
+      });
+
+    } catch (e) {
+  subtasksDiv.innerHTML = `<div class="ai-loading">❌ ${e.message}</div>`;
+}
+  }
+
+  function addSubtask(text, afterId) {
+    const idx = tasks.findIndex(t => t.id === afterId);
+    const parent = tasks[idx];
+    const newTask = {
+      id: Date.now() + Math.random(),
+      text,
+      done: false,
+      priority: parent ? parent.priority : 'none',
+      deadline: parent ? parent.deadline : ''
+    };
+    tasks.splice(idx + 1, 0, newTask);
     render();
   }
 
@@ -448,81 +764,88 @@ function saveEdit(id, value) {
     empty.style.display = filtered.length === 0 ? 'block' : 'none';
 
     filtered.forEach(task => {
-        const li = document.createElement('li');
-li.setAttribute('data-id', task.id);
-li.setAttribute('draggable', 'true');
+      const li = document.createElement('li');
+      li.setAttribute('data-id', task.id);
+      li.setAttribute('draggable', 'true');
 
-li.addEventListener('dragstart', () => {
-  li.classList.add('dragging');
-  setTimeout(() => li.classList.add('dragging'), 0);
-});
+      li.addEventListener('dragstart', () => {
+        li.classList.add('dragging');
+      });
 
-li.addEventListener('dragend', () => {
-  li.classList.remove('dragging');
-  document.querySelectorAll('li').forEach(el => el.classList.remove('drag-over'));
-  const newOrder = [...document.getElementById('taskList').querySelectorAll('li')]
-    .map(el => tasks.find(t => t.id == el.getAttribute('data-id')))
-    .filter(Boolean);
-  tasks = newOrder;
-  render();
-});
+      li.addEventListener('dragend', () => {
+        li.classList.remove('dragging');
+        document.querySelectorAll('li').forEach(el => el.classList.remove('drag-over'));
+        const newOrder = [...document.getElementById('taskList').querySelectorAll('li')]
+          .map(el => tasks.find(t => t.id == el.getAttribute('data-id')))
+          .filter(Boolean);
+        tasks = newOrder;
+        render();
+      });
 
-li.addEventListener('dragover', e => {
-  e.preventDefault();
-  document.querySelectorAll('li').forEach(el => el.classList.remove('drag-over'));
-  li.classList.add('drag-over');
-  const dragging = document.querySelector('.dragging');
-  if (dragging && dragging !== li) {
-    const list = document.getElementById('taskList');
-    const els = [...list.querySelectorAll('li')];
-    const dragIdx = els.indexOf(dragging);
-    const overIdx = els.indexOf(li);
-    if (dragIdx < overIdx) list.insertBefore(dragging, li.nextSibling);
-    else list.insertBefore(dragging, li);
-  }
-});
+      li.addEventListener('dragover', e => {
+        e.preventDefault();
+        document.querySelectorAll('li').forEach(el => el.classList.remove('drag-over'));
+        li.classList.add('drag-over');
+        const dragging = document.querySelector('.dragging');
+        if (dragging && dragging !== li) {
+          const els = [...list.querySelectorAll('li')];
+          const dragIdx = els.indexOf(dragging);
+          const overIdx = els.indexOf(li);
+          if (dragIdx < overIdx) list.insertBefore(dragging, li.nextSibling);
+          else list.insertBefore(dragging, li);
+        }
+      });
+
       const priorityEmoji = { none: '', low: '🟢', medium: '🟡', high: '🔴' };
-const today = new Date().toISOString().split('T')[0];
-const isOverdue = task.deadline && task.deadline < today && !task.done;
-const deadlineLabel = task.deadline
-  ? `<span class="deadline ${isOverdue ? 'overdue' : ''}">${isOverdue ? '⚠️ ' : '📅 '}${task.deadline}</span>`
-  : '';
-  li.innerHTML = `
-  <div class="checkbox ${task.done ? 'checked' : ''}" onclick="toggleDone(${task.id})"></div>
-  <div class="task-body">
-    <span class="task-text ${task.done ? 'done' : ''}">${task.text}</span>
-    ${deadlineLabel}
-  </div>
-  ${task.priority !== 'none' ? `<span>${priorityEmoji[task.priority]}</span>` : ''}
-  <button class="edit-btn" onclick="editTask(${task.id})">✏️</button>
-  <button class="delete-btn" onclick="deleteTask(${task.id})">✕</button>
-`;
+      const priority = task.priority || 'none';
+      const today = new Date().toISOString().split('T')[0];
+      const isOverdue = task.deadline && task.deadline < today && !task.done;
+      const deadlineLabel = task.deadline
+        ? `<span class="deadline ${isOverdue ? 'overdue' : ''}">${isOverdue ? '⚠️ ' : '📅 '}${task.deadline}</span>`
+        : '';
+
+      li.innerHTML = `
+        <div class="checkbox ${task.done ? 'checked' : ''}" onclick="toggleDone(${task.id})"></div>
+        <div class="task-body">
+          <span class="task-text ${task.done ? 'done' : ''}">${task.text}</span>
+          ${deadlineLabel}
+        </div>
+        ${priority !== 'none' ? `<span>${priorityEmoji[priority]}</span>` : ''}
+        <button class="ai-btn" onclick="aiExpand(${task.id})" title="Разбить на подзадачи">✨</button>
+        <button class="edit-btn" onclick="editTask(${task.id})" title="Редактировать">✏️</button>
+        <button class="delete-btn" onclick="deleteTask(${task.id})" title="Удалить">✕</button>
+      `;
+
       list.appendChild(li);
     });
   }
 
   function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.getAttribute('data-theme') === 'dark';
-  const newTheme = isDark ? 'light' : 'dark';
-  html.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-  document.getElementById('themeIcon').textContent = isDark ? '🌙' : '☀️';
-  document.getElementById('themeLabel').textContent = isDark ? 'Тёмная' : 'Светлая';
-}
-
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.getElementById('themeIcon').textContent = isDark ? '🌙' : '☀️';
+    document.getElementById('themeLabel').textContent = isDark ? 'Тёмная' : 'Светлая';
+  }
+  document.getElementById('deadlineInput').addEventListener('change', function() {
+  const btn = document.querySelector('.calendar-btn');
+  btn.classList.toggle('has-date', !!this.value);
+  btn.title = this.value ? `Дедлайн: ${this.value}` : 'Выбрать дедлайн';
+});
   document.getElementById('taskInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') addTask();
   });
 
   tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
 
-const savedTheme = localStorage.getItem('theme') || 'light';
-document.documentElement.setAttribute('data-theme', savedTheme);
-document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-document.getElementById('themeLabel').textContent = savedTheme === 'dark' ? 'Светлая' : 'Тёмная';
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  document.getElementById('themeLabel').textContent = savedTheme === 'dark' ? 'Светлая' : 'Тёмная';
 
-render();
+  render();
 </script>
 </body>
 </html>
