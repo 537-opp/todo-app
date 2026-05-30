@@ -1,0 +1,34 @@
+{
+  "name": "ai-first-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/537-opp/todo-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/537-opp/todo-app/issues"
+  },
+  "homepage": "https://github.com/537-opp/todo-app#readme",
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.todo.app",
+    "productName": "Todo App",
+    "win": {
+      "target": "portable"
+    }
+  }
+}
